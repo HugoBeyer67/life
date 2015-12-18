@@ -71,6 +71,11 @@ h1{
 	margin-bottom: 40px;
 	margin-top: 20px;
 }
+.start{
+	display: block;
+	width:120px;
+	margin: auto;
+}
 
 .ligne{
 	font-size: 0px;

@@ -1,14 +1,14 @@
 var Life = React.createClass({
   getInitialState: function(){
-    return {table : [],
-            player : "x",
-            gameEnd : false,
-            clickFlag : 0
+    return {table : this.createTable(),
+            clickFlag : 0,
+            start : false,
             
   
   }
 },
-componentDidMount: function(){
+
+createTable: function(){
   var generalTable = [];
   for(var i = 0; i<this.props.numberInY;i++){
     var ligne = [];
@@ -18,9 +18,11 @@ componentDidMount: function(){
     }
     generalTable.push(ligne);  
   }
-  this.setState({
-    table : generalTable
-  });
+  
+  return generalTable;
+},
+componentDidMount: function(){
+
 
 },
   
@@ -37,19 +39,73 @@ componentDidMount: function(){
     // var playerTarget = event.target;
     // var targetLineIndex = playerTarget.getAttribute("data-l-index");
     // var targetBlockIndex = playerTarget.getAttribute("data-b-index");
-    var newTable = this.state.table;
-    newTable[i][j] = !this.state.table[i][j];
+    var clickTable = this.state.table;
+    clickTable[i][j] = !this.state.table[i][j];
     this.setState({
-      table : newTable
+      table : clickTable
     });
+  },
+  handleClick: function (event) {
+    this.setState({start : !this.state.start})
+    console.log(this.state.start);
+    setInterval(this.checkRules.bind(this), 100);
+  },
+  
+  checkRules: function () {
+    console.log("checkRules START");
+    if(this.state.start == true){
+      var newTable = _.clone(this.state.table, true);
+      for(var i = 0; i < this.state.table.length ; i++){
+        for(var j = 0; j < this.state.table[i].length; j++){
+          console.log("checkRules TRUE");
+          var aliveFlag = this.checkAround(i,j);
+          console.log("aliveFLag : "+aliveFlag);
+          if(this.state.table[i][j]==true){
+            if(aliveFlag!=2&&aliveFlag!=3){
+              newTable[i][j] = false;
+              
+            }
+          }
+          
+          if(this.state.table[i][j]==false){
+            if(aliveFlag==3){
+              newTable[i][j] = true;
+            }
+          }
+          
+          //console.log("render second loop");
+          
+          // this.state.table[i][j]==true alive
+          // compter le nombre de voisin vivants autour:
+          
+        }
+      }
+      console.log(newTable);
+      this.setState({table : newTable});    
+    }
+  },
+  checkAround: function(i,j) {
+    //console.log("checkAroundStart i: "+i+" j: "+j);
+    //console.log("x-length : "+this.state.table.length+" y-length : "+this.state.table[i].length);
+    //if(i>0&&j>0&&i<this.state.table.length&&j<)
+    var aliveFlag = 0;
+    if(i>0&&j>0&&this.state.table[i-1][j-1]==true) aliveFlag++;
+    if(i>0&&this.state.table[i-1][j]==true) aliveFlag++;
+    if(i>0&&j<this.state.table[i].length-1&&this.state.table[i-1][j+1]==true) aliveFlag++;
+    if(j>0&&this.state.table[i][j-1]==true) aliveFlag++;
+    if(j<this.state.table[i].length-1&&this.state.table[i][j+1]==true) aliveFlag++;
+    if(i<this.state.table.length-1&&j>0&&this.state.table[i+1][j-1]==true) aliveFlag++;
+    if(i<this.state.table.length-1&&this.state.table[i+1][j]==true) aliveFlag++;
+    if(i<this.state.table.length-1&&j<this.state.table[i].length-1&&this.state.table[i+1][j+1]==true) aliveFlag++;
+    //console.log("checkAroundEnd");
     
-    console.log(this.state.table[i][j]);
+    return aliveFlag;
   },
   
   render: function(){
     //console.log("render 1");
     var morpion = [];
-    var time = new Date();
+    //var time = new Date();
     for(var i = 0; i < this.state.table.length ; i++){
       //console.log("render First loop");
       
@@ -64,9 +120,13 @@ componentDidMount: function(){
     	}
     	morpion.push(<div key={i} className="ligne">{ligne}</div>);
     }
-    console.log(new Date()-time);
-    return <div>{morpion}</div>;    
+    return <div>{morpion}<button className="start" onClick={this.handleClick}>Start</button></div>;    
   }
+  
+  
+  
+  
+  
 });
 
 ReactDOM.render(
