@@ -55,13 +55,16 @@ html {
 }
 body{
 	font-family: arial;
+	text-align: center;
+	position: relative;
 }
 
 #container{
 	padding-top: 60px;
-	width:464px;
-	margin: auto;
+	display: inline-block;
+	text-align: center;
 	margin-bottom: 20px;
+	margin:auto;
 }
 h1{
 	font-size: 2.4rem;
@@ -79,22 +82,24 @@ h1{
 
 .ligne{
 	font-size: 0px;
+	width:100%;
+}
+
+.block{
 }
 .dead_block{
-	height:30px;
-	width:30px;
-	background-color: black;
+	background-color: lightCoral;
 	display:inline-block;
-	border: 1px solid grey;
+	border-bottom: 1px solid white;
+	border-right: 1px solid white;
 	vertical-align: bottom;
 	text-align: center;
 }
 .alive_block{
-	height:30px;
-	width:30px;
 	background-color: white;
 	display:inline-block;
-	border: 1px solid grey;
+	border-bottom: 1px solid white;
+	border-right: 1px solid white;
 	vertical-align: bottom;
 	text-align: center;
 }
@@ -104,4 +109,19 @@ h1{
 	font-size: 2rem;
 	text-align: center;
 	margin: auto;
+}
+
+.panel{
+	background-color: lightgrey;
+}
+
+.panel:after{
+	display: table;
+	content:'';
+	clear: both;
+}
+
+.panel button{
+	display: block;
+	float:left;
 }

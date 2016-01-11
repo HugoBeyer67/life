@@ -3,6 +3,9 @@ var Life = React.createClass({
     return {table : this.createTable(),
             clickFlag : 0,
             start : false,
+            running : "Start",
+            blockSize : 15,
+            speed :100
             
   
   }
@@ -25,41 +28,94 @@ componentDidMount: function(){
 
 
 },
-  
-  // createLigne: function (ligne,l_index) {
-  //     return <div className="ligne">{ligne.map(this.createCase(l_index))}</div>
-  // },
-  // createCase:function(l_index){
-  //   return function (block, b_index) {
-  //       //console.log(l_index, b_index);
-  //       return <div className="block" data-l-index={l_index} data-b-index={b_index} onClick={this.wantedBlock}>{block}</div>
-  //   }.bind(this);
-  // },
+
   wantedBlock: function (i, j) {
-    // var playerTarget = event.target;
-    // var targetLineIndex = playerTarget.getAttribute("data-l-index");
-    // var targetBlockIndex = playerTarget.getAttribute("data-b-index");
     var clickTable = this.state.table;
     clickTable[i][j] = !this.state.table[i][j];
     this.setState({
       table : clickTable
     });
   },
-  handleClick: function (event) {
-    this.setState({start : !this.state.start})
-    console.log(this.state.start);
-    setInterval(this.checkRules.bind(this), 100);
+  handleStart: function () {
+    
+    console.log("before "+this.state.start);
+    var invertStart = !this.state.start;
+    console.log("invertStart "+invertStart);
+    this.setState({start: invertStart});
+    console.log("after "+this.state.start);
+    this.handleInterval(invertStart);
+
+  },
+  
+  handleReset: function () {
+    console.log("reset");
+    var previous_size = this.state.blockSize;
+    clearInterval(this.state.interval);
+    this.setState(
+      this.getInitialState() 
+    );
+    this.setState({
+      blockSize : previous_size
+    });
+  },
+  
+  handleRange: function (event) {
+    var speed = (event.target.value);
+    this.changeSpeed(speed);
+  },
+  
+  handleBlockSize: function (event) {
+    var size_input_value = (event.target.value);
+    this.setState({
+      blockSize : size_input_value
+    });
+    console.log(this.state.blockSize);
+  },
+  
+  changeSpeed: function (speed) {
+    var difference = speed - 100;
+    var realSpeed = 100 - difference;
+    clearInterval(this.state.interval);
+    if(this.state.start==true){
+      this.setState({
+        interval : setInterval(this.checkRules, realSpeed),
+        speed : realSpeed
+      });      
+    }
+    else{
+      this.setState({
+        speed : realSpeed
+      });        
+    }
+
+    
+  },
+  
+  handleInterval: function (start){
+    console.log("START : "+start);
+    if(start == true){
+      this.setState({
+        interval : setInterval(this.checkRules, this.state.speed),
+        running : "Pause"
+      });
+    }
+    if(start == false){
+      clearInterval(this.state.interval);
+      this.setState({
+        running : "Start"
+      });
+    }
   },
   
   checkRules: function () {
-    console.log("checkRules START");
-    if(this.state.start == true){
+    console.log("interval Running");
+    //console.log("checkRules START");
       var newTable = _.clone(this.state.table, true);
       for(var i = 0; i < this.state.table.length ; i++){
         for(var j = 0; j < this.state.table[i].length; j++){
-          console.log("checkRules TRUE");
+          //console.log("checkRules TRUE");
           var aliveFlag = this.checkAround(i,j);
-          console.log("aliveFLag : "+aliveFlag);
+          //console.log("aliveFLag : "+aliveFlag);
           if(this.state.table[i][j]==true){
             if(aliveFlag!=2&&aliveFlag!=3){
               newTable[i][j] = false;
@@ -73,16 +129,11 @@ componentDidMount: function(){
             }
           }
           
-          //console.log("render second loop");
-          
-          // this.state.table[i][j]==true alive
-          // compter le nombre de voisin vivants autour:
-          
         }
       }
-      console.log(newTable);
+      //console.log(newTable);
       this.setState({table : newTable});    
-    }
+    
   },
   checkAround: function(i,j) {
     //console.log("checkAroundStart i: "+i+" j: "+j);
@@ -114,13 +165,24 @@ componentDidMount: function(){
         //console.log("render second loop");
         if(this.state.table[i][j]==false) var aliveOrDead = "dead";
         else var aliveOrDead = "alive";
-        var classes = aliveOrDead+"_block";
-    		var Case = <div key={i+"-"+j} className={classes} onClick={this.wantedBlock.bind(this,i,j)}>{this.state.table[i][j]}</div>;
+        var classes = aliveOrDead+"_block block";
+        var size = this.state.blockSize+'px';
+    		var Case = <div key={i+"-"+j} className={classes} style={{width : size, height : size}} onClick={this.wantedBlock.bind(this,i,j)}>{this.state.table[i][j]}</div>;
     		ligne[j]=(Case);
     	}
     	morpion.push(<div key={i} className="ligne">{ligne}</div>);
     }
-    return <div>{morpion}<button className="start" onClick={this.handleClick}>Start</button></div>;    
+    return <div>
+      <div className='panel'>
+        <button name='start' className="start" onClick={this.handleStart}>{this.state.running}</button>
+        <button onClick={this.handleReset}>Reset</button>
+        <label for='range'>Speed</label>
+        <input name='range' onChange={this.handleRange} type='range' min='0' max ='200'/>
+        <label for='blockSize'>Block Size</label>
+        <input name ='blockSize' type='number' value={this.state.blockSize} onChange={this.handleBlockSize} />
+      </div>
+      <div>{morpion}</div>
+    </div>;    
   }
   
   
@@ -130,6 +192,6 @@ componentDidMount: function(){
 });
 
 ReactDOM.render(
-  <div><Life numberInX="15" numberInY="15" /></div>,
+  <div><Life numberInX="20" numberInY="20" /></div>,
   document.getElementById('container')
 );
