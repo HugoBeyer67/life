@@ -65,6 +65,7 @@ body{
 	text-align: center;
 	margin-bottom: 20px;
 	margin:auto;
+	padding-bottom: 30px;
 }
 h1{
 	font-size: 2.4rem;
@@ -85,21 +86,29 @@ h1{
 	width:100%;
 }
 
+.ligne div:first-of-type{
+	border-left: 1px solid lightgrey;
+}
+
+.ligne:first-of-type div{
+	border-top: 1px solid lightgrey;
+}
+
 .block{
 }
 .dead_block{
-	background-color: lightCoral;
+	background-color: white;
 	display:inline-block;
-	border-bottom: 1px solid white;
-	border-right: 1px solid white;
+	border-bottom: 1px solid lightgrey;
+	border-right: 1px solid lightgrey;
 	vertical-align: bottom;
 	text-align: center;
 }
 .alive_block{
 	background-color: white;
 	display:inline-block;
-	border-bottom: 1px solid white;
-	border-right: 1px solid white;
+	border-bottom: 1px solid lightgrey;
+	border-right: 1px solid lightgrey;
 	vertical-align: bottom;
 	text-align: center;
 }
@@ -113,6 +122,7 @@ h1{
 
 .panel{
 	background-color: lightgrey;
+	margin-bottom: 30px;
 }
 
 .panel:after{

@@ -1,21 +1,22 @@
 var Life = React.createClass({
   getInitialState: function(){
-    return {table : this.createTable(),
+    return { numberInY : 20,
+            numberInX : 20,
+            table : [],
             clickFlag : 0,
             start : false,
             running : "Start",
             blockSize : 15,
             speed :100
-            
   
   }
 },
 
 createTable: function(){
   var generalTable = [];
-  for(var i = 0; i<this.props.numberInY;i++){
+  for(var i = 0; i<this.state.numberInY;i++){
     var ligne = [];
-    for(var j = 0; j<this.props.numberInX;j++){
+    for(var j = 0; j<this.state.numberInX;j++){
       var block = false;
       ligne.push(block);
     }
@@ -25,8 +26,9 @@ createTable: function(){
   return generalTable;
 },
 componentDidMount: function(){
-
-
+  this.setState({
+    table : this.createTable()
+  });
 },
 
   wantedBlock: function (i, j) {
@@ -48,14 +50,19 @@ componentDidMount: function(){
   },
   
   handleReset: function () {
-    console.log("reset");
     var previous_size = this.state.blockSize;
+    var previous_x = this.state.numberInX;
+    var previous_y = this.state.numberInY;
     clearInterval(this.state.interval);
     this.setState(
-      this.getInitialState() 
+      this.getInitialState()
+      
     );
+    this.componentDidMount();
     this.setState({
-      blockSize : previous_size
+      blockSize : previous_size,
+      numberInX : previous_x,
+      numberInY : previous_y
     });
   },
   
@@ -64,12 +71,27 @@ componentDidMount: function(){
     this.changeSpeed(speed);
   },
   
+  handleTableSizeX: function (event) {
+    var table_size_x_save = (event.target.value);
+    this.handleReset();
+    this.setState({
+      numberInX : table_size_x_save
+    });
+  },
+    handleTableSizeY: function (event) {
+      var table_size_y_save = (event.target.value);
+      this.handleReset();
+      this.setState({
+        numberInY : table_size_y_save
+      });
+      
+  },
+  
   handleBlockSize: function (event) {
     var size_input_value = (event.target.value);
     this.setState({
       blockSize : size_input_value
     });
-    console.log(this.state.blockSize);
   },
   
   changeSpeed: function (speed) {
@@ -105,6 +127,16 @@ componentDidMount: function(){
         running : "Start"
       });
     }
+  },
+  
+  randomColor :function(){
+    var colorTable = [0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F'];
+    var colorName = '#';
+    for(var i = 0;i<6; i++){
+      var item = colorTable[Math.floor(Math.random()*colorTable.length)];
+      colorName+=item;
+    }
+    return colorName;
   },
   
   checkRules: function () {
@@ -163,11 +195,19 @@ componentDidMount: function(){
     	var ligne=new Array(this.state.table[i].length);
     	for(var j = 0; j < this.state.table[i].length; j++){
         //console.log("render second loop");
-        if(this.state.table[i][j]==false) var aliveOrDead = "dead";
-        else var aliveOrDead = "alive";
+        if(this.state.table[i][j]==false){
+          var blockColor = 'white';
+          var aliveOrDead = "dead";
+        } 
+        else{
+          var aliveOrDead = "alive"; 
+          var blockColor = this.randomColor(); 
+          console.log("block COlor : "+blockColor);
+        } 
         var classes = aliveOrDead+"_block block";
         var size = this.state.blockSize+'px';
-    		var Case = <div key={i+"-"+j} className={classes} style={{width : size, height : size}} onClick={this.wantedBlock.bind(this,i,j)}>{this.state.table[i][j]}</div>;
+        
+    		var Case = <div key={i+"-"+j} className={classes} style={{width : size, height : size, background : blockColor}} onClick={this.wantedBlock.bind(this,i,j)}>{this.state.table[i][j]}</div>;
     		ligne[j]=(Case);
     	}
     	morpion.push(<div key={i} className="ligne">{ligne}</div>);
@@ -176,10 +216,14 @@ componentDidMount: function(){
       <div className='panel'>
         <button name='start' className="start" onClick={this.handleStart}>{this.state.running}</button>
         <button onClick={this.handleReset}>Reset</button>
-        <label for='range'>Speed</label>
+        <label htmlFor='range'>Speed</label>
         <input name='range' onChange={this.handleRange} type='range' min='0' max ='200'/>
-        <label for='blockSize'>Block Size</label>
+        <label htmlFor='blockSize'>Block Size</label>
         <input name ='blockSize' type='number' value={this.state.blockSize} onChange={this.handleBlockSize} />
+        <label htmlFor='tableSizeX'>X:</label>
+        <input name ='tableSizeX' type='number' value={this.state.numberInX} onChange={this.handleTableSizeX} />
+        <label htmlFor='tableSizeY'>Y:</label>
+        <input name ='tableSizeY' type='number' value={this.state.numberInY} onChange={this.handleTableSizeY} />
       </div>
       <div>{morpion}</div>
     </div>;    
@@ -192,6 +236,6 @@ componentDidMount: function(){
 });
 
 ReactDOM.render(
-  <div><Life numberInX="20" numberInY="20" /></div>,
+  <div><Life/></div>,
   document.getElementById('container')
 );
