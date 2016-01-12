@@ -7,7 +7,11 @@ var Life = React.createClass({
             start : false,
             running : "Start",
             blockSize : 15,
-            speed :100
+            speed :100,
+            livingGround : 2,
+            livingCeiling : 3,
+            birthRule :3
+            
   
   }
 },
@@ -53,6 +57,9 @@ componentDidMount: function(){
     var previous_size = this.state.blockSize;
     var previous_x = this.state.numberInX;
     var previous_y = this.state.numberInY;
+    var previous_livingGround = this.state.livingGround;
+    var previous_livingCeiling = this.state.livingCeiling;
+    var previous_birthRule = this.state.birthRule;
     clearInterval(this.state.interval);
     this.setState(
       this.getInitialState()
@@ -62,11 +69,14 @@ componentDidMount: function(){
     this.setState({
       blockSize : previous_size,
       numberInX : previous_x,
-      numberInY : previous_y
+      numberInY : previous_y,
+      livingGround : previous_livingGround,
+      livingCeiling : previous_livingCeiling,
+      birthRule :previous_birthRule
     });
   },
   
-  handleRange: function (event) {
+  handleSpeed: function (event) {
     var speed = (event.target.value);
     this.changeSpeed(speed);
   },
@@ -91,6 +101,25 @@ componentDidMount: function(){
     var size_input_value = (event.target.value);
     this.setState({
       blockSize : size_input_value
+    });
+  },
+  
+  handleBirthRule: function (event) {
+    var current_birth_rule = (event.target.value);
+    this.setState({
+      birthRule : current_birth_rule
+    });
+  },
+  handleLivingCeiling: function (event) {
+    var current_value = (event.target.value);
+    this.setState({
+      livingCeiling : current_value
+    });
+  },
+  handleLivingGround: function (event) {
+    var current_value = (event.target.value);
+    this.setState({
+      livingGround : current_value
     });
   },
   
@@ -139,6 +168,10 @@ componentDidMount: function(){
     return colorName;
   },
   
+  saveTable :function(){
+    
+  },
+  
   checkRules: function () {
     console.log("interval Running");
     //console.log("checkRules START");
@@ -149,14 +182,14 @@ componentDidMount: function(){
           var aliveFlag = this.checkAround(i,j);
           //console.log("aliveFLag : "+aliveFlag);
           if(this.state.table[i][j]==true){
-            if(aliveFlag!=2&&aliveFlag!=3){
+            if(aliveFlag!=this.state.livingGround&&aliveFlag!=this.state.livingCeiling){
               newTable[i][j] = false;
               
             }
           }
           
           if(this.state.table[i][j]==false){
-            if(aliveFlag==3){
+            if(aliveFlag==this.state.birthRule){
               newTable[i][j] = true;
             }
           }
@@ -217,13 +250,14 @@ componentDidMount: function(){
         <button name='start' className="start" onClick={this.handleStart}>{this.state.running}</button>
         <button onClick={this.handleReset}>Reset</button>
         <label htmlFor='range'>Speed</label>
-        <input name='range' onChange={this.handleRange} type='range' min='0' max ='200'/>
+        <input name='range' onChange={this.handleSpeed} type='range' min='0' max ='200'/>
         <label htmlFor='blockSize'>Block Size</label>
         <input name ='blockSize' type='number' value={this.state.blockSize} onChange={this.handleBlockSize} />
         <label htmlFor='tableSizeX'>X:</label>
         <input name ='tableSizeX' type='number' value={this.state.numberInX} onChange={this.handleTableSizeX} />
         <label htmlFor='tableSizeY'>Y:</label>
         <input name ='tableSizeY' type='number' value={this.state.numberInY} onChange={this.handleTableSizeY} />
+        <p className='rules'>The cell survives if it has between <input type='number' min='0' max='8' value={this.state.livingGround} onChange={this.handleLivingGround} /> and <input type='number' min='0' max='8' value={this.state.livingCeiling} onChange={this.handleLivingCeiling} /> living cells around it. A dead cell can ressurect if it has <input type='number' min='0' max='8' value={this.state.birthRule} onChange={this.handleBirthRule} /> cells arround it </p>
       </div>
       <div>{morpion}</div>
     </div>;    

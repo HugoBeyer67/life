@@ -80,6 +80,9 @@ h1{
 	width:120px;
 	margin: auto;
 }
+.rules input{
+	width:34px;
+}
 
 .ligne{
 	font-size: 0px;
