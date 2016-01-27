@@ -1,3 +1,5 @@
+
+
 var Life = React.createClass({
   getInitialState: function(){
     return { numberInY : 20,
@@ -10,9 +12,42 @@ var Life = React.createClass({
             speed :100,
             livingGround : 2,
             livingCeiling : 3,
-            birthRule :3
-            
-  
+            birthRule :3,
+            stepsTable : [],
+            stepsCount : 0
+
+  }
+},
+
+checkKey:function(e){
+  e = e || window.event;
+  console.log(this.state.stepsCount);
+  var previousIndex = 0;
+  var previousTable = [];
+  if (e.keyCode == '37' && this.state.stepsCount > 0) {
+     previousIndex = this.state.stepsCount - 1;
+     previousTable = this.state.stepsTable[previousIndex];
+     clearInterval(this.state.interval);
+     this.setState({
+       start : false,
+       running : "Start",
+       table : previousTable,
+       stepsCount : previousIndex
+     });
+     
+     // left arrow
+  }
+  else if (e.keyCode == '39') {
+    clearInterval(this.state.interval);
+    this.checkRules();
+    this.setState({
+      start : false,
+      running : "Start"
+    });
+     // right arrow
+     // on fait tourner l'interval une fois
+    //  nextIndex = this.state.stepsCount + 1;
+    //  nextTable = this.state.stepsTable[nextIndex];
   }
 },
 
@@ -34,6 +69,10 @@ componentDidMount: function(){
     table : this.createTable()
   });
 },
+
+componentWillMount:function(){
+   document.addEventListener("keydown", this.checkKey);
+ },
 
   wantedBlock: function (i, j) {
     var clickTable = this.state.table;
@@ -146,11 +185,13 @@ componentDidMount: function(){
     console.log("START : "+start);
     if(start == true){
       this.setState({
+        //The game is running 
         interval : setInterval(this.checkRules, this.state.speed),
-        running : "Pause"
+        running : "Pause",
       });
     }
     if(start == false){
+      //the game is on pause
       clearInterval(this.state.interval);
       this.setState({
         running : "Start"
@@ -168,14 +209,62 @@ componentDidMount: function(){
     return colorName;
   },
   
+  chargePattern :function(pattern){
+    switch (pattern) {
+      case 'pulsar':
+        var result = [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]];
+        this.setState({
+          table : result,
+          start : false,
+          running : "Start"
+        });         
+        clearInterval(this.state.interval);
+
+  
+        break;
+        
+    }
+  },
+  
   saveTable :function(){
     
+    var dataObj = {
+      'good': 'love',
+      'bad': 'hate'
+    };  
+    var jsonData = JSON.stringify(this.state.table);
+    console.log(jsonData);
+    var blob = new Blob([jsonData], {type: "application/json; charset=utf-8"});
+saveAs(blob, "save.json");
+//json .parse pour inverser
+  },
+  
+  importTable :function(e){
+    //alert('HELLO');
+    var file = e.target.files[0]
+    if (file) {
+      var reader = new FileReader();
+      reader.readAsText(file, "UTF-8");
+      reader.onload = evt => {
+          var result = JSON.parse(evt.target.result);
+          this.setState({
+            table : result
+          });           
+      }
+      reader.onerror = function (evt) {
+          document.getElementById("fileContents").innerHTML = "error reading file";
+        }
+    }
+//json .parse pour inverser
   },
   
   checkRules: function () {
-    console.log("interval Running");
     //console.log("checkRules START");
       var newTable = _.clone(this.state.table, true);
+      var newStepsTable = _.clone(this.state.stepsTable, true);
+      var newStepsCount = this.state.stepsCount + 1;
+      
+      newStepsTable.push(this.state.table);
       for(var i = 0; i < this.state.table.length ; i++){
         for(var j = 0; j < this.state.table[i].length; j++){
           //console.log("checkRules TRUE");
@@ -197,13 +286,16 @@ componentDidMount: function(){
         }
       }
       //console.log(newTable);
-      this.setState({table : newTable});    
-    
+      
+      
+      this.setState({
+        stepsTable : newStepsTable,
+        stepsCount : newStepsCount, 
+        table : newTable  
+      });    
+      console.log(this.state.stepsTable);
   },
   checkAround: function(i,j) {
-    //console.log("checkAroundStart i: "+i+" j: "+j);
-    //console.log("x-length : "+this.state.table.length+" y-length : "+this.state.table[i].length);
-    //if(i>0&&j>0&&i<this.state.table.length&&j<)
     var aliveFlag = 0;
     if(i>0&&j>0&&this.state.table[i-1][j-1]==true) aliveFlag++;
     if(i>0&&this.state.table[i-1][j]==true) aliveFlag++;
@@ -235,7 +327,6 @@ componentDidMount: function(){
         else{
           var aliveOrDead = "alive"; 
           var blockColor = this.randomColor(); 
-          console.log("block COlor : "+blockColor);
         } 
         var classes = aliveOrDead+"_block block";
         var size = this.state.blockSize+'px';
@@ -258,6 +349,11 @@ componentDidMount: function(){
         <label htmlFor='tableSizeY'>Y:</label>
         <input name ='tableSizeY' type='number' value={this.state.numberInY} onChange={this.handleTableSizeY} />
         <p className='rules'>The cell survives if it has between <input type='number' min='0' max='8' value={this.state.livingGround} onChange={this.handleLivingGround} /> and <input type='number' min='0' max='8' value={this.state.livingCeiling} onChange={this.handleLivingCeiling} /> living cells around it. A dead cell can ressurect if it has <input type='number' min='0' max='8' value={this.state.birthRule} onChange={this.handleBirthRule} /> cells arround it </p>
+        <button className='saveTable' onClick={this.saveTable}>Save</button>
+        <input type='file' onChange={this.importTable}/>
+      </div>
+      <div className='patterns'>
+        <button onClick={this.chargePattern.bind(this,'pulsar')} >Pulsar</button>
       </div>
       <div>{morpion}</div>
     </div>;    
