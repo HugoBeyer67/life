@@ -34,7 +34,7 @@ checkKey:function(e){
        table : previousTable,
        stepsCount : previousIndex
      });
-     
+
      // left arrow
   }
   else if (e.keyCode == '39') {
@@ -59,9 +59,9 @@ createTable: function(){
       var block = false;
       ligne.push(block);
     }
-    generalTable.push(ligne);  
+    generalTable.push(ligne);
   }
-  
+
   return generalTable;
 },
 componentDidMount: function(){
@@ -82,7 +82,7 @@ componentWillMount:function(){
     });
   },
   handleStart: function () {
-    
+
     console.log("before "+this.state.start);
     var invertStart = !this.state.start;
     console.log("invertStart "+invertStart);
@@ -91,7 +91,7 @@ componentWillMount:function(){
     this.handleInterval(invertStart);
 
   },
-  
+
   handleReset: function () {
     var previous_size = this.state.blockSize;
     var previous_x = this.state.numberInX;
@@ -102,7 +102,7 @@ componentWillMount:function(){
     clearInterval(this.state.interval);
     this.setState(
       this.getInitialState()
-      
+
     );
     this.componentDidMount();
     this.setState({
@@ -114,12 +114,12 @@ componentWillMount:function(){
       birthRule :previous_birthRule
     });
   },
-  
+
   handleSpeed: function (event) {
     var speed = (event.target.value);
     this.changeSpeed(speed);
   },
-  
+
   handleTableSizeX: function (event) {
     var table_size_x_save = (event.target.value);
     this.handleReset();
@@ -133,16 +133,16 @@ componentWillMount:function(){
       this.setState({
         numberInY : table_size_y_save
       });
-      
+
   },
-  
+
   handleBlockSize: function (event) {
     var size_input_value = (event.target.value);
     this.setState({
       blockSize : size_input_value
     });
   },
-  
+
   handleBirthRule: function (event) {
     var current_birth_rule = (event.target.value);
     this.setState({
@@ -161,7 +161,7 @@ componentWillMount:function(){
       livingGround : current_value
     });
   },
-  
+
   changeSpeed: function (speed) {
     var difference = speed - 100;
     var realSpeed = 100 - difference;
@@ -170,22 +170,22 @@ componentWillMount:function(){
       this.setState({
         interval : setInterval(this.checkRules, realSpeed),
         speed : realSpeed
-      });      
+      });
     }
     else{
       this.setState({
         speed : realSpeed
-      });        
+      });
     }
 
-    
+
   },
-  
+
   handleInterval: function (start){
     console.log("START : "+start);
     if(start == true){
       this.setState({
-        //The game is running 
+        //The game is running
         interval : setInterval(this.checkRules, this.state.speed),
         running : "Pause",
       });
@@ -198,7 +198,7 @@ componentWillMount:function(){
       });
     }
   },
-  
+
   randomColor :function(){
     var colorTable = [0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F'];
     var colorName = '#';
@@ -208,7 +208,7 @@ componentWillMount:function(){
     }
     return colorName;
   },
-  
+
   chargePattern :function(pattern){
     switch (pattern) {
       case 'pulsar':
@@ -217,7 +217,7 @@ componentWillMount:function(){
           table : result,
           start : false,
           running : "Start"
-        });         
+        });
         clearInterval(this.state.interval);
         break;
       case 'glider':
@@ -226,35 +226,35 @@ componentWillMount:function(){
           table : result,
           start : false,
           running : "Start"
-        });         
+        });
         clearInterval(this.state.interval);
-        break; 
-          
+        break;
+
         case 'weekender':
-        var result = [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false],[false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false],[false,true,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,true,false],[false,false,false,true,true,true,false,false,true,false,false,true,false,false,true,true,true,false,false,false],[false,false,false,false,true,true,false,true,true,false,false,true,true,false,true,true,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,true,true,true,true,true,true,true,true,false,false,false,false,false,false],[false,false,false,false,false,false,false,true,false,true,true,false,true,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]];     
+        var result = [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false],[false,true,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,false,false],[false,true,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,true,false],[false,false,false,true,true,true,false,false,true,false,false,true,false,false,true,true,true,false,false,false],[false,false,false,false,true,true,false,true,true,false,false,true,true,false,true,true,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,true,true,true,true,true,true,true,true,false,false,false,false,false,false],[false,false,false,false,false,false,false,true,false,true,true,false,true,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]];
           this.setState({
             table : result,
             start : false,
             running : "Start"
-          });         
+          });
           clearInterval(this.state.interval);
-          break;         
+          break;
     }
   },
-  
+
   saveTable :function(){
-    
+
     var dataObj = {
       'good': 'love',
       'bad': 'hate'
-    };  
+    };
     var jsonData = JSON.stringify(this.state.table);
     console.log(jsonData);
     var blob = new Blob([jsonData], {type: "application/json; charset=utf-8"});
 saveAs(blob, "save.json");
 //json .parse pour inverser
   },
-  
+
   importTable :function(e){
     //alert('HELLO');
     var file = e.target.files[0]
@@ -265,7 +265,7 @@ saveAs(blob, "save.json");
           var result = JSON.parse(evt.target.result);
           this.setState({
             table : result
-          });           
+          });
       }
       reader.onerror = function (evt) {
           document.getElementById("fileContents").innerHTML = "error reading file";
@@ -273,13 +273,13 @@ saveAs(blob, "save.json");
     }
 //json .parse pour inverser
   },
-  
+
   checkRules: function () {
     //console.log("checkRules START");
       var newTable = _.clone(this.state.table, true);
       var newStepsTable = _.clone(this.state.stepsTable, true);
       var newStepsCount = this.state.stepsCount + 1;
-      
+
       newStepsTable.push(this.state.table);
       for(var i = 0; i < this.state.table.length ; i++){
         for(var j = 0; j < this.state.table[i].length; j++){
@@ -289,26 +289,26 @@ saveAs(blob, "save.json");
           if(this.state.table[i][j]==true){
             if(aliveFlag!=this.state.livingGround&&aliveFlag!=this.state.livingCeiling){
               newTable[i][j] = false;
-              
+
             }
           }
-          
+
           if(this.state.table[i][j]==false){
             if(aliveFlag==this.state.birthRule){
               newTable[i][j] = true;
             }
           }
-          
+
         }
       }
       //console.log(newTable);
-      
-      
+
+
       this.setState({
         stepsTable : newStepsTable,
-        stepsCount : newStepsCount, 
-        table : newTable  
-      });    
+        stepsCount : newStepsCount,
+        table : newTable
+      });
       console.log(this.state.stepsTable);
   },
   checkAround: function(i,j) {
@@ -322,31 +322,31 @@ saveAs(blob, "save.json");
     if(i<this.state.table.length-1&&this.state.table[i+1][j]==true) aliveFlag++;
     if(i<this.state.table.length-1&&j<this.state.table[i].length-1&&this.state.table[i+1][j+1]==true) aliveFlag++;
     //console.log("checkAroundEnd");
-    
+
     return aliveFlag;
   },
-  
+
   render: function(){
     //console.log("render 1");
     var morpion = [];
     //var time = new Date();
     for(var i = 0; i < this.state.table.length ; i++){
       //console.log("render First loop");
-      
+
     	var ligne=new Array(this.state.table[i].length);
     	for(var j = 0; j < this.state.table[i].length; j++){
         //console.log("render second loop");
         if(this.state.table[i][j]==false){
           var blockColor = 'white';
           var aliveOrDead = "dead";
-        } 
+        }
         else{
-          var aliveOrDead = "alive"; 
-          var blockColor = this.randomColor(); 
-        } 
+          var aliveOrDead = "alive";
+          var blockColor = this.randomColor();
+        }
         var classes = aliveOrDead+"_block block";
         var size = this.state.blockSize+'px';
-        
+
     		var Case = <div key={i+"-"+j} className={classes} style={{width : size, height : size, background : blockColor}} onClick={this.wantedBlock.bind(this,i,j)}>{this.state.table[i][j]}</div>;
     		ligne[j]=(Case);
     	}
@@ -374,13 +374,8 @@ saveAs(blob, "save.json");
         <button onClick={this.chargePattern.bind(this,'weekender')} >Weekender</button>
       </div>
       <div>{morpion}</div>
-    </div>;    
+    </div>;
   }
-  
-  
-  
-  
-  
 });
 
 ReactDOM.render(
