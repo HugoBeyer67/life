@@ -43,12 +43,9 @@ checkKey:function(e){
       running : "Start"
     });
   }
-    
-    else if (e.keyCode == '32') {
-      console.log('SPACEBAR');
-      this.handleStart();
-  }
 },
+
+
 
 createTable: function(){
   var generalTable = [];
@@ -63,6 +60,33 @@ createTable: function(){
 
   return generalTable;
 },
+
+createRandomTable: function(){
+  var generalTable = [];
+  for(var i = 0; i<this.state.numberInY;i++){
+    var ligne = [];
+    for(var j = 0; j<this.state.numberInX;j++){
+      var randomVal = Math.round(Math.random());
+      if(randomVal == 0){
+        var block = false;
+      }
+      else{
+        var block = true;
+      }
+      ligne.push(block);
+    }
+    generalTable.push(ligne);
+  }
+
+  this.setState({
+    table : generalTable,
+    running : "Start",
+    start : false
+  });  
+  clearInterval(this.state.interval);
+  
+},
+
 componentDidMount: function(){
   this.setState({
     table : this.createTable()
@@ -334,8 +358,9 @@ saveAs(blob, "save.json");
     }
     return <div>
       <div className='panel'>
-        <button name='start' className="start" onClick={this.handleStart}>{this.state.running}</button>
+        <button name='start' id='start_pause_button' className="start" onClick={this.handleStart}>{this.state.running}</button>
         <button onClick={this.handleReset}>Reset</button>
+        <button onClick={this.createRandomTable}>Randomize</button>
         <label htmlFor='range'>Speed</label>
         <input name='range' onChange={this.handleSpeed} type='range' min='0' max ='200'/>
         <label htmlFor='blockSize'>Block Size</label>
@@ -357,7 +382,6 @@ saveAs(blob, "save.json");
         INFOS :
         Right Arrow : go forward in time;
         Left Arrow : go back in time;
-        Spacebar : Pause;
       </div>
       <div>{morpion}</div>
     </div>;

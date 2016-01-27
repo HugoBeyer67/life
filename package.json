@@ -5,10 +5,12 @@
   "dependencies": {
     "babel-cli": "^6.4.5",
     "babel-preset-es2015": "^6.3.13",
-    "babel-preset-react": "^6.3.13"
+    "babel-preset-react": "^6.3.13",
+    "nodewebkit": "~0.11.6"
   },
   "scripts": {
-    "compile": "babel js/main.js --watch --out-file js/main.compiled.js"
+    "compile": "babel js/main.js --watch --out-file js/main.compiled.js",
+    "start": "nodewebkit"
   },
   "window": {
     "title": "node-webkit demo",
