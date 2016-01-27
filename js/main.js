@@ -1,5 +1,3 @@
-
-
 var Life = React.createClass({
   getInitialState: function(){
     return { numberInY : 20,
@@ -47,8 +45,6 @@ checkKey:function(e){
   }
     
     else if (e.keyCode == '32') {
-      //spacebar
-      //clearInterval(this.state.interval);
       console.log('SPACEBAR');
       this.handleStart();
   }
@@ -248,14 +244,11 @@ componentWillMount:function(){
       'bad': 'hate'
     };
     var jsonData = JSON.stringify(this.state.table);
-    //console.log(jsonData);
     var blob = new Blob([jsonData], {type: "application/json; charset=utf-8"});
 saveAs(blob, "save.json");
-//json .parse pour inverser
   },
 
   importTable :function(e){
-    //alert('HELLO');
     var file = e.target.files[0]
     if (file) {
       var reader = new FileReader();
@@ -270,11 +263,9 @@ saveAs(blob, "save.json");
           document.getElementById("fileContents").innerHTML = "error reading file";
         }
     }
-//json .parse pour inverser
   },
 
   checkRules: function () {
-    //console.log("checkRules START");
       var newTable = _.clone(this.state.table, true);
       var newStepsTable = _.clone(this.state.stepsTable, true);
       var newStepsCount = this.state.stepsCount + 1;
@@ -282,9 +273,7 @@ saveAs(blob, "save.json");
       newStepsTable.push(this.state.table);
       for(var i = 0; i < this.state.table.length ; i++){
         for(var j = 0; j < this.state.table[i].length; j++){
-          //console.log("checkRules TRUE");
           var aliveFlag = this.checkAround(i,j);
-          //console.log("aliveFLag : "+aliveFlag);
           if(this.state.table[i][j]==true){
             if(aliveFlag!=this.state.livingGround&&aliveFlag!=this.state.livingCeiling){
               newTable[i][j] = false;
@@ -300,7 +289,6 @@ saveAs(blob, "save.json");
 
         }
       }
-      //console.log(newTable);
 
 
       this.setState({
@@ -319,21 +307,15 @@ saveAs(blob, "save.json");
     if(i<this.state.table.length-1&&j>0&&this.state.table[i+1][j-1]==true) aliveFlag++;
     if(i<this.state.table.length-1&&this.state.table[i+1][j]==true) aliveFlag++;
     if(i<this.state.table.length-1&&j<this.state.table[i].length-1&&this.state.table[i+1][j+1]==true) aliveFlag++;
-    //console.log("checkAroundEnd");
 
     return aliveFlag;
   },
 
   render: function(){
-    //console.log("render 1");
     var morpion = [];
-    //var time = new Date();
     for(var i = 0; i < this.state.table.length ; i++){
-      //console.log("render First loop");
-
     	var ligne=new Array(this.state.table[i].length);
     	for(var j = 0; j < this.state.table[i].length; j++){
-        //console.log("render second loop");
         if(this.state.table[i][j]==false){
           var blockColor = 'white';
           var aliveOrDead = "dead";
