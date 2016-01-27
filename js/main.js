@@ -21,7 +21,7 @@ var Life = React.createClass({
 
 checkKey:function(e){
   e = e || window.event;
-  console.log(this.state.stepsCount);
+  //console.log(this.state.stepsCount);
   var previousIndex = 0;
   var previousTable = [];
   if (e.keyCode == '37' && this.state.stepsCount > 0) {
@@ -44,10 +44,13 @@ checkKey:function(e){
       start : false,
       running : "Start"
     });
-     // right arrow
-     // on fait tourner l'interval une fois
-    //  nextIndex = this.state.stepsCount + 1;
-    //  nextTable = this.state.stepsTable[nextIndex];
+  }
+    
+    else if (e.keyCode == '32') {
+      //spacebar
+      //clearInterval(this.state.interval);
+      console.log('SPACEBAR');
+      this.handleStart();
   }
 },
 
@@ -82,12 +85,8 @@ componentWillMount:function(){
     });
   },
   handleStart: function () {
-
-    console.log("before "+this.state.start);
     var invertStart = !this.state.start;
-    console.log("invertStart "+invertStart);
     this.setState({start: invertStart});
-    console.log("after "+this.state.start);
     this.handleInterval(invertStart);
 
   },
@@ -182,7 +181,7 @@ componentWillMount:function(){
   },
 
   handleInterval: function (start){
-    console.log("START : "+start);
+    //console.log("START : "+start);
     if(start == true){
       this.setState({
         //The game is running
@@ -249,7 +248,7 @@ componentWillMount:function(){
       'bad': 'hate'
     };
     var jsonData = JSON.stringify(this.state.table);
-    console.log(jsonData);
+    //console.log(jsonData);
     var blob = new Blob([jsonData], {type: "application/json; charset=utf-8"});
 saveAs(blob, "save.json");
 //json .parse pour inverser
@@ -306,10 +305,9 @@ saveAs(blob, "save.json");
 
       this.setState({
         stepsTable : newStepsTable,
-        stepsCount : newStepsCount,
-        table : newTable
-      });
-      console.log(this.state.stepsTable);
+        stepsCount : newStepsCount, 
+        table : newTable  
+      });    
   },
   checkAround: function(i,j) {
     var aliveFlag = 0;
@@ -372,6 +370,12 @@ saveAs(blob, "save.json");
         <button onClick={this.chargePattern.bind(this,'pulsar')} >Pulsar</button>
         <button onClick={this.chargePattern.bind(this,'glider')} >Glider</button>
         <button onClick={this.chargePattern.bind(this,'weekender')} >Weekender</button>
+      </div>
+      <div className='infos'>
+        INFOS :
+        Right Arrow : go forward in time;
+        Left Arrow : go back in time;
+        Spacebar : Pause;
       </div>
       <div>{morpion}</div>
     </div>;
