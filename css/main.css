@@ -60,12 +60,9 @@ body{
 }
 
 #container{
-	padding-top: 60px;
-	display: inline-block;
+	display: block;
 	text-align: center;
-	margin-bottom: 20px;
 	margin:auto;
-	padding-bottom: 30px;
 }
 h1{
 	font-size: 2.4rem;
@@ -124,8 +121,23 @@ h1{
 }
 
 .panel{
-	background-color: lightgrey;
-	margin-bottom: 30px;
+	background-color: #2ecc71;
+	padding: 20px;
+	color: white;
+	width: 33%;
+	float: left;
+	height: 100vh;
+}
+
+.patterns:before {
+    display: block;
+    content: "Insert pattern :";
+    padding-top: 30px;
+}
+.patterns:after{
+	display: block;
+    content: "";
+    padding-bottom: 15px;
 }
 
 .panel:after{
@@ -134,7 +146,56 @@ h1{
 	clear: both;
 }
 
-.panel button{
-	display: block;
-	float:left;
+.panel button, .patterns button{
+	display: inline-block;
+	float:none;
+	margin: auto;
+	width: 100px;
+	background: none;
+	border:none;
+	padding: 10px;
+	background-color: #27ae60;
+	margin: 5px;
+	cursor: pointer;
+	color: white;
+	font-weight: bold;
+	-webkit-transition:all 0.5s;
+	-moz-transition:all 0.5s;
+	-ms-transition:all 0.5s;
+	-o-transition:all 0.5s;
+	transition:all 0.5s;
+}
+
+.panel button:hover, .patterns button:hover{
+	background-color: rgb(34,149,83);
+}
+
+label[for="range"]:before {
+    display: block;
+    content: "";
+    clear: both;
+}
+label[for="blockSize"]:before {
+    display: block;
+    content: "";
+    clear: both;
+}
+
+input{
+	margin: 5px 0;
+}
+label{
+	margin:0 5px;
+}
+
+
+p.rules{
+	margin: 10px 0;
+}
+input[type="number"]{
+	width: 45px;
+	border:none;
+	background-color: rgba(255,255,255,0.2);
+	padding: 5px;
+	color: white;
 }
