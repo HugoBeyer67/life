@@ -1,5 +1,3 @@
-"use strict";
-
 var Life = React.createClass({
 	getInitialState: function () {
 		return {
@@ -15,7 +13,8 @@ var Life = React.createClass({
 			livingCeiling : 3,
 			birthRule :3,
 			stepsTable : [],
-			stepsCount : 0
+			stepsCount : 0,
+			isOnEdge : false
 
 		};
 	},
@@ -24,7 +23,7 @@ var Life = React.createClass({
 	    e = e || window.event;
 	    var previousIndex = 0;
 	    var previousTable = [];
-	    if (e.keyCode === "37" && this.state.stepsCount > 0) {
+	    if (e.keyCode === 37 && this.state.stepsCount > 0) {
 		    //left arrow
 		    previousIndex = this.state.stepsCount - 1;
 		    previousTable = this.state.stepsTable[previousIndex];
@@ -36,7 +35,7 @@ var Life = React.createClass({
 			    stepsCount : previousIndex
 		    });
 	    }
-	    else if (e.keyCode === "39") {
+	    else if (e.keyCode === 39) {
 		    //right arrow
 		    clearInterval(this.state.interval);
 		    this.runStep();
@@ -121,9 +120,17 @@ var Life = React.createClass({
 
     runStep: function () {
 	    var newTable = _.clone(this.state.table, true);
-	    var newStepsTable = _.clone(this.state.stepsTable, true);
-	    var newStepsCount = this.state.stepsCount + 1;
-
+	    var newStepsTable = _.clone(this.state.stepsTable, true);		
+			if(this.state.isOnEdge){
+				var newStepsCount = 99;
+				newStepsTable.shift();
+			}
+			else{
+				var newStepsCount = this.state.stepsCount + 1;
+				if(newStepsCount === 99){
+					this.setState({isOnEdge: true});
+				}						
+			}
 	    newStepsTable.push(this.state.table);
 	    for (var i = 0; i < this.state.table.length ; i++) {
 		    for (var j = 0; j < this.state.table[i].length; j++) {
@@ -147,9 +154,11 @@ var Life = React.createClass({
 
 	    this.setState({
 		    stepsTable : newStepsTable,
-	    stepsCount : newStepsCount,
-	    table : newTable
+	    	stepsCount : newStepsCount,
+	    	table : newTable
 	    });
+			console.log('stepsCount' + this.state.stepsCount)
+			console.log((this.state.stepsTable).length);
     },
 
     // check the rules around a cell, counts the number of 'alive' cells around
@@ -267,19 +276,19 @@ var Life = React.createClass({
     // Rules of the game
 
     handleBirthRule: function (event) {
-	    var current_birth_rule = (event.target.value);
+	    var current_birth_rule = parseInt(event.target.value);
 	    this.setState({
 		    birthRule : current_birth_rule
 	    });
     },
     handleLivingCeiling: function (event) {
-	    var current_value = (event.target.value);
+	    var current_value = parseInt(event.target.value);
 	    this.setState({
 		    livingCeiling : current_value
 	    });
     },
     handleLivingGround: function (event) {
-	    var current_value = (event.target.value);
+	    var current_value = parseInt(event.target.value);
 	    this.setState({
 		    livingGround : current_value
 	    });
@@ -294,7 +303,7 @@ var Life = React.createClass({
 	    }
 	    return colorName;
     },
-
+		
     chargePattern :function (pattern) {
 	    switch (pattern) {
 		    case "pulsar":
@@ -329,11 +338,6 @@ var Life = React.createClass({
     },
 
     saveTable :function () {
-
-	    var dataObj = {
-		    "good": "love",
-		    "bad": "hate"
-	    };
 	    var jsonData = JSON.stringify(this.state.table);
 	    var blob = new Blob([jsonData], {type: "application/json; charset=utf-8"});
 	    saveAs(blob, "save.json");
