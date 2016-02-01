@@ -47,7 +47,6 @@ checkKey:function(e){
 
 //creates an empty table
 createTable: function(){
-  alert('CREATE TABLE');
   var generalTable = [];
   for(var i = 0; i<this.state.numberInY;i++){
     var ligne = [];
