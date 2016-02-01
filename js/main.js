@@ -5,7 +5,7 @@ var Life = React.createClass({
             table : [],
             clickFlag : 0,
             start : false,
-            running : "Start",
+            startButtonLabel : "Start",
             blockSize : 15,
             speed :100,
             livingGround : 2,
@@ -16,38 +16,38 @@ var Life = React.createClass({
 
   }
 },
-
+//checkKey for rewind or going 'forward in time'. Event attached to the document
 checkKey:function(e){
   e = e || window.event;
-  //console.log(this.state.stepsCount);
   var previousIndex = 0;
   var previousTable = [];
   if (e.keyCode == '37' && this.state.stepsCount > 0) {
+    //left arrow
      previousIndex = this.state.stepsCount - 1;
      previousTable = this.state.stepsTable[previousIndex];
      clearInterval(this.state.interval);
      this.setState({
        start : false,
-       running : "Start",
+       startButtonLabel : "Start",
        table : previousTable,
        stepsCount : previousIndex
      });
-
-     // left arrow
   }
   else if (e.keyCode == '39') {
+    //right arrow
     clearInterval(this.state.interval);
     this.checkRules();
     this.setState({
       start : false,
-      running : "Start"
+      startButtonLabel : "Start"
     });
   }
 },
 
 
-
+//creates an empty table
 createTable: function(){
+  alert('CREATE TABLE');
   var generalTable = [];
   for(var i = 0; i<this.state.numberInY;i++){
     var ligne = [];
@@ -61,6 +61,7 @@ createTable: function(){
   return generalTable;
 },
 
+//creates a random table
 createRandomTable: function(){
   var generalTable = [];
   for(var i = 0; i<this.state.numberInY;i++){
@@ -80,36 +81,59 @@ createRandomTable: function(){
 
   this.setState({
     table : generalTable,
-    running : "Start",
+    startButtonLabel : "Start",
     start : false
   });  
   clearInterval(this.state.interval);
   
 },
 
+// when component did mount create an empty table
 componentDidMount: function(){
   this.setState({
     table : this.createTable()
   });
 },
 
+//attach the keydown event to the document (checkey -> going back and forth in time)
 componentWillMount:function(){
    document.addEventListener("keydown", this.checkKey);
  },
+ 
+//handles the click of a cell in the table, replaces the existing table by the new table containing clicked cells
+wantedBlock: function (i, j) {
+  var clickTable = this.state.table;
+  clickTable[i][j] = !this.state.table[i][j];
+  this.setState({
+    table : clickTable
+  });
+},
 
-  wantedBlock: function (i, j) {
-    var clickTable = this.state.table;
-    clickTable[i][j] = !this.state.table[i][j];
+//Plays or Pauses the game  
+handlePlayPause: function () {
+  var invertStart = !this.state.start;
+  this.setState({start: invertStart});
+  this.handleInterval(invertStart);
+
+},
+
+//handles the interval that are running the game
+handleInterval: function (start){
+  if(start == true){
     this.setState({
-      table : clickTable
+      //The game is running
+      interval : setInterval(this.checkRules, this.state.speed),
+      startButtonLabel : "Pause",
     });
-  },
-  handleStart: function () {
-    var invertStart = !this.state.start;
-    this.setState({start: invertStart});
-    this.handleInterval(invertStart);
-
-  },
+  }
+  if(start == false){
+    //the game is on pause
+    clearInterval(this.state.interval);
+    this.setState({
+      startButtonLabel : "Start"
+    });
+  }
+},
 
   handleReset: function () {
     var previous_size = this.state.blockSize;
@@ -200,24 +224,6 @@ componentWillMount:function(){
 
   },
 
-  handleInterval: function (start){
-    //console.log("START : "+start);
-    if(start == true){
-      this.setState({
-        //The game is running
-        interval : setInterval(this.checkRules, this.state.speed),
-        running : "Pause",
-      });
-    }
-    if(start == false){
-      //the game is on pause
-      clearInterval(this.state.interval);
-      this.setState({
-        running : "Start"
-      });
-    }
-  },
-
   randomColor :function(){
     var colorTable = [0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F'];
     var colorName = '#';
@@ -235,7 +241,7 @@ componentWillMount:function(){
         this.setState({
           table : result,
           start : false,
-          running : "Start"
+          startButtonLabel : "Start"
         });
         clearInterval(this.state.interval);
         break;
@@ -244,7 +250,7 @@ componentWillMount:function(){
         this.setState({
           table : result,
           start : false,
-          running : "Start"
+          startButtonLabel : "Start"
         });
         clearInterval(this.state.interval);
         break;
@@ -254,7 +260,7 @@ componentWillMount:function(){
           this.setState({
             table : result,
             start : false,
-            running : "Start"
+            startButtonLabel : "Start"
           });
           clearInterval(this.state.interval);
           break;
@@ -358,7 +364,7 @@ saveAs(blob, "save.json");
     }
     return <div>
       <div className='panel'>
-        <button name='start' id='start_pause_button' className="start" onClick={this.handleStart}>{this.state.running}</button>
+        <button name='start' id='start_pause_button' className="start" onClick={this.handlePlayPause}>{this.state.startButtonLabel}</button>
         <button onClick={this.handleReset}>Reset</button>
         <button onClick={this.createRandomTable}>Randomize</button>
         <label htmlFor='range'>Speed</label>
