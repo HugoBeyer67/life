@@ -36,7 +36,7 @@ checkKey:function(e){
   else if (e.keyCode == '39') {
     //right arrow
     clearInterval(this.state.interval);
-    this.checkRules();
+    this.runStep();
     this.setState({
       start : false,
       startButtonLabel : "Start"
@@ -116,12 +116,60 @@ handlePlayPause: function () {
 
 },
 
+runStep: function () {
+    var newTable = _.clone(this.state.table, true);
+    var newStepsTable = _.clone(this.state.stepsTable, true);
+    var newStepsCount = this.state.stepsCount + 1;
+
+    newStepsTable.push(this.state.table);
+    for(var i = 0; i < this.state.table.length ; i++){
+      for(var j = 0; j < this.state.table[i].length; j++){
+        var aliveFlag = this.checkAround(i,j);
+        if(this.state.table[i][j]==true){
+          if(aliveFlag!=this.state.livingGround&&aliveFlag!=this.state.livingCeiling){
+            newTable[i][j] = false;
+
+          }
+        }
+
+        if(this.state.table[i][j]==false){
+          if(aliveFlag==this.state.birthRule){
+            newTable[i][j] = true;
+          }
+        }
+
+      }
+    }
+
+
+    this.setState({
+      stepsTable : newStepsTable,
+      stepsCount : newStepsCount, 
+      table : newTable  
+    });    
+},
+
+// check the rules around a cell, counts the number of 'alive' cells around
+checkAround: function(i,j) {
+  var aliveFlag = 0;
+  if(i>0&&j>0&&this.state.table[i-1][j-1]==true) aliveFlag++;
+  if(i>0&&this.state.table[i-1][j]==true) aliveFlag++;
+  if(i>0&&j<this.state.table[i].length-1&&this.state.table[i-1][j+1]==true) aliveFlag++;
+  if(j>0&&this.state.table[i][j-1]==true) aliveFlag++;
+  if(j<this.state.table[i].length-1&&this.state.table[i][j+1]==true) aliveFlag++;
+  if(i<this.state.table.length-1&&j>0&&this.state.table[i+1][j-1]==true) aliveFlag++;
+  if(i<this.state.table.length-1&&this.state.table[i+1][j]==true) aliveFlag++;
+  if(i<this.state.table.length-1&&j<this.state.table[i].length-1&&this.state.table[i+1][j+1]==true) aliveFlag++;
+
+  return aliveFlag;
+},
+
 //handles the interval that are running the game
 handleInterval: function (start){
   if(start == true){
     this.setState({
       //The game is running
-      interval : setInterval(this.checkRules, this.state.speed),
+      interval : setInterval(this.runStep, this.state.speed),
       startButtonLabel : "Pause",
     });
   }
@@ -134,93 +182,104 @@ handleInterval: function (start){
   }
 },
 
-  handleReset: function () {
-    var previous_size = this.state.blockSize;
-    var previous_x = this.state.numberInX;
-    var previous_y = this.state.numberInY;
-    var previous_livingGround = this.state.livingGround;
-    var previous_livingCeiling = this.state.livingCeiling;
-    var previous_birthRule = this.state.birthRule;
-    clearInterval(this.state.interval);
-    this.setState(
-      this.getInitialState()
+handleReset: function () {
+  //save the states we want to keep after reset
+  var previous_size = this.state.blockSize;
+  var previous_x = this.state.numberInX;
+  var previous_y = this.state.numberInY;
+  var previous_livingGround = this.state.livingGround;
+  var previous_livingCeiling = this.state.livingCeiling;
+  var previous_birthRule = this.state.birthRule;
+  //resets
+  clearInterval(this.state.interval);
+  this.setState(
+    this.getInitialState()
+  );
+  //creates table
+  this.componentDidMount();
+  //set the new states with previous values
+  this.setState({
+    blockSize : previous_size,
+    numberInX : previous_x,
+    numberInY : previous_y,
+    livingGround : previous_livingGround,
+    livingCeiling : previous_livingCeiling,
+    birthRule :previous_birthRule
+  });
+},
 
-    );
-    this.componentDidMount();
+handleSpeed: function (event) {
+  var speed = (event.target.value);
+  this.changeSpeed(speed);
+},
+
+changeSpeed: function (speed) {
+  var difference = speed - 100;
+  var realSpeed = 100 - difference;
+  
+  //clears the current interval, then set a new interval with the new speed
+  clearInterval(this.state.interval);
+  
+  if(this.state.start==true){
     this.setState({
-      blockSize : previous_size,
-      numberInX : previous_x,
-      numberInY : previous_y,
-      livingGround : previous_livingGround,
-      livingCeiling : previous_livingCeiling,
-      birthRule :previous_birthRule
+      interval : setInterval(this.runStep, realSpeed),
+      speed : realSpeed
     });
-  },
-
-  handleSpeed: function (event) {
-    var speed = (event.target.value);
-    this.changeSpeed(speed);
-  },
-
-  handleTableSizeX: function (event) {
-    var table_size_x_save = (event.target.value);
-    this.handleReset();
+  }
+  else{
     this.setState({
-      numberInX : table_size_x_save
+      speed : realSpeed
     });
-  },
-    handleTableSizeY: function (event) {
-      var table_size_y_save = (event.target.value);
-      this.handleReset();
-      this.setState({
-        numberInY : table_size_y_save
-      });
+  }
+},
 
-  },
+//handle the number of cells in X
+handleTableSizeX: function (event) {
+  var table_size_x_save = (event.target.value);
+  this.handleReset();
+  this.setState({
+    numberInX : table_size_x_save
+  });
+},
 
-  handleBlockSize: function (event) {
-    var size_input_value = (event.target.value);
-    this.setState({
-      blockSize : size_input_value
-    });
-  },
+//handle the number of cells in Y
+handleTableSizeY: function (event) {
+  var table_size_y_save = (event.target.value);
+  this.handleReset();
+  this.setState({
+    numberInY : table_size_y_save
+  });
 
-  handleBirthRule: function (event) {
-    var current_birth_rule = (event.target.value);
-    this.setState({
-      birthRule : current_birth_rule
-    });
-  },
-  handleLivingCeiling: function (event) {
-    var current_value = (event.target.value);
-    this.setState({
-      livingCeiling : current_value
-    });
-  },
+},
+
+//change the displayed size of the blocks (in css)
+handleBlockSize: function (event) {
+  var size_input_value = (event.target.value);
+  this.setState({
+    blockSize : size_input_value
+  });
+},
+
+
+// Rules of the game
+
+handleBirthRule: function (event) {
+  var current_birth_rule = (event.target.value);
+  this.setState({
+    birthRule : current_birth_rule
+  });
+},
+handleLivingCeiling: function (event) {
+  var current_value = (event.target.value);
+  this.setState({
+    livingCeiling : current_value
+  });
+},
   handleLivingGround: function (event) {
     var current_value = (event.target.value);
     this.setState({
       livingGround : current_value
     });
-  },
-
-  changeSpeed: function (speed) {
-    var difference = speed - 100;
-    var realSpeed = 100 - difference;
-    clearInterval(this.state.interval);
-    if(this.state.start==true){
-      this.setState({
-        interval : setInterval(this.checkRules, realSpeed),
-        speed : realSpeed
-      });
-    }
-    else{
-      this.setState({
-        speed : realSpeed
-      });
-    }
-
-
   },
 
   randomColor :function(){
@@ -292,52 +351,6 @@ saveAs(blob, "save.json");
           document.getElementById("fileContents").innerHTML = "error reading file";
         }
     }
-  },
-
-  checkRules: function () {
-      var newTable = _.clone(this.state.table, true);
-      var newStepsTable = _.clone(this.state.stepsTable, true);
-      var newStepsCount = this.state.stepsCount + 1;
-
-      newStepsTable.push(this.state.table);
-      for(var i = 0; i < this.state.table.length ; i++){
-        for(var j = 0; j < this.state.table[i].length; j++){
-          var aliveFlag = this.checkAround(i,j);
-          if(this.state.table[i][j]==true){
-            if(aliveFlag!=this.state.livingGround&&aliveFlag!=this.state.livingCeiling){
-              newTable[i][j] = false;
-
-            }
-          }
-
-          if(this.state.table[i][j]==false){
-            if(aliveFlag==this.state.birthRule){
-              newTable[i][j] = true;
-            }
-          }
-
-        }
-      }
-
-
-      this.setState({
-        stepsTable : newStepsTable,
-        stepsCount : newStepsCount, 
-        table : newTable  
-      });    
-  },
-  checkAround: function(i,j) {
-    var aliveFlag = 0;
-    if(i>0&&j>0&&this.state.table[i-1][j-1]==true) aliveFlag++;
-    if(i>0&&this.state.table[i-1][j]==true) aliveFlag++;
-    if(i>0&&j<this.state.table[i].length-1&&this.state.table[i-1][j+1]==true) aliveFlag++;
-    if(j>0&&this.state.table[i][j-1]==true) aliveFlag++;
-    if(j<this.state.table[i].length-1&&this.state.table[i][j+1]==true) aliveFlag++;
-    if(i<this.state.table.length-1&&j>0&&this.state.table[i+1][j-1]==true) aliveFlag++;
-    if(i<this.state.table.length-1&&this.state.table[i+1][j]==true) aliveFlag++;
-    if(i<this.state.table.length-1&&j<this.state.table[i].length-1&&this.state.table[i+1][j+1]==true) aliveFlag++;
-
-    return aliveFlag;
   },
 
   render: function(){
